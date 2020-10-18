@@ -1,0 +1,60 @@
+---------Mare manevra de joc in Java---------------
+
+Jucator = Thread
+
+CASTIGAREA JOCULUI = primul care face o comunitate
+Comunitatea = 10 case, 2 biserici, 1 scoala
+
+Inceputul jocului = 0 resurse, 1 muncitor, 1 primarie
+
+
+
+Resursele: lemn, piatra, aur, carne          -----------------> PACHET 1 = resurse
+
+Carne: --> oaie/moara (cladire)
+-time_to_collect = 6s
+-cat da ca resursa: 4
+
+Lemn:
+-time_to_collect = 10s
+-cat da ca resursa: 6
+
+Piatra:
+-time_to_collect = 15s
+-cat da ca resursa: 15
+
+Aur:
+-time_to_collect = 20s
+-cat da ca resursa: 10
+
+
+Unitate de baza: muncitorul                ---------------------> PACHET 2 = unitati
+-actiuni: taieLemn, spargePiatra, mineazaAur
+-construieste: cladiri
+-deplasare: 4 axe (N E S W)
+
+Jucatorul (persoana) poate crea mai multi muncitori.
+
+Cladirea de inceput: primaria               ---------------------> PACHET 3 = cladiri
+-timp de creare a unui muncitor: 10s
+-cost muncitor: 20 carne 
+
+Cladiri: case, biserica, scoala
+
+Casa:
+-timp de construire: 40s
+-resurse necesare: 20 lemn, 40 piatra, 15 carne
+
+Biserica:
+-timp de construire: 1 min 30s
+-resurse necesare: 25 lemn, 60 piatra, 40 aur
+
+Scoala:
+-timp de construire: 1 min
+-resurse necesare: 50 lemn, 30 piatra, 10 carne, 10 aur
+
+
+!! Clasa publica ce initializeaza pe restul !!
+
+
+Cea mai de baza problema de concurenta: accesarea aceleasi resurse de catre 2 unitati/jucatori
