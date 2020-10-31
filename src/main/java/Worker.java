@@ -1,3 +1,4 @@
+/*
 public class Worker {
     private double x;
     private double y;
@@ -27,3 +28,4 @@ public class Worker {
     }
 
 }
+*/
