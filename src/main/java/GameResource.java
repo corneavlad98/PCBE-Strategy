@@ -31,7 +31,7 @@ public class GameResource implements Runnable {
 //        }
 //        return instance;
 //    }
-
+    //TODO: keep track of the value and the array that was depleted
     public void apply(MyPair myPair){
 
         if(myPair.array == 0){
