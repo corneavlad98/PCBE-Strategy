@@ -7,22 +7,20 @@ import java.util.Random;
 
 // singleton class
 public class Board extends JPanel {
-    public int spacing = 2;
-    Color myGreen = new Color(83, 205, 99); // Custom green color
-    Color myBrown = new Color(141, 69, 38); // Custom brown color
-    Color player1Color = new Color(218, 6, 233); // Custom purple color
-    Color player2Color = new Color(31, 44, 218); // Custom blue color
-
+    private int spacing = 2;
+    private Color myGreen = new Color(83, 205, 99); // Custom green color
+    private Color myBrown = new Color(141, 69, 38); // Custom brown color
+    private Color player1Color = new Color(218, 6, 233); // Custom purple color
+    private Color player2Color = new Color(31, 44, 218); // Custom blue color
+    private int selectedPlayer = MyConstants.NO_PLAYER_SELECTED;
     public int mouseX, mouseY;
 
-    int[][] map = new int[32][32];
+    static int[][] map = new int[32][32];
     int[][] wood = new int[32][32];
     int[][] stone = new int[32][32];
     int[][] gold = new int[32][32];
     boolean[][] clicked = new boolean[32][32];
-    private static int[] woodArray;
-    private static int[] stoneArray;
-    private static int[] goldArray;
+
 
     private String s;
 
@@ -48,7 +46,19 @@ public class Board extends JPanel {
                        for (int j = 0; j < 32; j++) {
                            if (i == inBoxX() && j == inBoxY()) {
                                clicked[i][j] = true;
-                               System.out.println("Box that was clicked: [" + inBoxX() + "," + inBoxY() + "]");
+                               System.out.println("Box that was clicked: [" + inBoxX() + ", " + inBoxY() + "]");
+                               if(selectedPlayer != MyConstants.NO_PLAYER_SELECTED) {
+                                   movePlayer(i, j);
+                                   selectedPlayer = MyConstants.NO_PLAYER_SELECTED;
+                                   break;
+                               }
+                               if(map[i][j] == MyConstants.PLAYER_ONE || map[i][j] == MyConstants.PLAYER_TWO) {
+                                   System.out.println("player " + map[i][j]);
+                                   selectedPlayer = map[i][j];
+                                   map[i][j] = MyConstants.PLAYER_SELECTED;
+                                   System.out.println(selectedPlayer);
+                                   break;
+                               }
                            } else clicked[i][j] = false;
                        }
                    }
@@ -78,64 +88,6 @@ public class Board extends JPanel {
        }).start();
     }
 
-    public static Board getInstance(String testString) {
-
-        if(woodArray==null){
-            woodArray = generateRandomArray(530);
-        }
-        if(stoneArray==null){
-            stoneArray = generateRandomArray(325);
-        }
-        if(goldArray==null){
-            goldArray = generateRandomArray(325);
-        }
-        return new Board(testString);
-    }
-
-    public void generatePlayers() {
-        map[0][31] = 1;
-        map[31][0] = 2;
-    }
-
-    private static int[] generateRandomArray(int size) {
-        int[] randArray = new int[size];
-        Random rand = new Random();
-
-        for (int i = 0; i < size; i++) {
-            randArray[i] = rand.nextInt(100);
-        }
-        return randArray;
-    }
-
-    public void generateWood() {
-        for (int i = 0; i < 23; i++) {
-            for (int j = 0; j < 23; j++) {
-                if (woodArray[i*23 + j] < 30) {
-                    wood[i+4][j+3] = 1;
-                } else wood[i+4][j+3] = 0;
-            }
-        }
-    }
-
-    public void generateStone() {
-        for (int i = 0; i < 19; i++) {
-            for (int j = 0; j < 19; j++) {
-                if (stoneArray[i*15 + j] < 23) {
-                    stone[i+6][j+6] = 1;
-                } else stone[i+6][j+6] = 0;
-            }
-        }
-    }
-
-    public void generateGold() {
-        for (int i = 0; i < 16; i++) {
-            for (int j = 0; j < 16; j++) {
-                if (goldArray[i*10 + j] < 11) {
-                    gold[i+7][j+5] = 1;
-                } else gold[i+7][j+5] = 0;
-            }
-        }
-    }
 
     public void paintComponent(Graphics g) {
         g.setColor(Color.DARK_GRAY);
@@ -158,10 +110,71 @@ public class Board extends JPanel {
                     g.setColor(Color.WHITE);
                 if((mouseX >= spacing+i*20 ) && (mouseX <= spacing+i*20-2*spacing+16) && (mouseY >= spacing+j*20) && (mouseY <= spacing+j*20+12))
                     g.setColor(Color.red);
-
+                if(map[i][j] == 7)
+                    g.setColor(Color.CYAN);
                 g.fillRect(spacing + i * 20, spacing + j * 20, 22 - 2 * spacing, 22 - 2 * spacing);
             }
         }
+    }
+
+    public void movePlayer(int x, int y) {
+        System.out.println("MOVING to " + x + " " + y);
+        int playerCurrentXPos = -1, playerCurrentYPos = -1;
+        playerCurrentXPos = getSelectedPlayerXPos();
+        playerCurrentYPos = getSelectedPlayerYPos();
+        int difX, difY;
+        difX = x - playerCurrentXPos;
+        difY = y - playerCurrentYPos;
+        System.out.println(playerCurrentXPos + " " + playerCurrentYPos);
+        System.out.println(selectedPlayer);
+        if(selectedPlayer == MyConstants.NO_PLAYER_SELECTED) {
+            return;
+        }
+        if(difX > 0) {
+            while(x > playerCurrentXPos) {
+                playerCurrentXPos++;
+            }
+        } else if(difX < 0) {
+            while(x < playerCurrentXPos) {
+                playerCurrentXPos--;
+            }
+        }
+        if(difY > 0) {
+            while (y > playerCurrentYPos) {
+                playerCurrentYPos++;
+            }
+        } else if(difY < 0) {
+            while(y < playerCurrentYPos) {
+                playerCurrentYPos--;
+            }
+        }
+        map[playerCurrentXPos][playerCurrentYPos] = selectedPlayer;
+        System.out.println("Player " + selectedPlayer + " is at [" + playerCurrentXPos + ", " + playerCurrentYPos + "]\n");
+        selectedPlayer = MyConstants.NO_PLAYER_SELECTED;
+    }
+
+    private int getSelectedPlayerXPos() {
+        if(selectedPlayer != MyConstants.NO_PLAYER_SELECTED){
+            for(int i = 0; i < 32; i++){
+                for(int j = 0; j < 32; j++){
+                    if(map[i][j] == MyConstants.PLAYER_SELECTED)
+                        return i;
+                }
+            }
+        }
+        return -1;
+    }
+
+    private int getSelectedPlayerYPos() {
+        if (selectedPlayer != MyConstants.NO_PLAYER_SELECTED) {
+            int xPos = getSelectedPlayerXPos();
+            for(int i = 0; i < 32; i++){
+                if(map[xPos][i] == MyConstants.PLAYER_SELECTED){
+                    return i;
+                }
+            }
+        }
+        return -1;
     }
 
 //     public class Move implements MouseMotionListener {
