@@ -19,9 +19,8 @@ public class MyConstants {
     public static final int PLAYER_TWO = 2;
     public static final int PLAYER_SELECTED = 3;
     public static final int NO_PLAYER_SELECTED = 0;
-    public static final int WOOD_MAX_LENGTH = 10;
-    public static final int STONE_MAX_LENGTH = 10;
-    public static final int GOLD_MAX_LENGTH = 10;
+    public static final int ARRAY_MAX_LENGTH = 20;
+
 
 
 

@@ -1,8 +1,8 @@
-public class MyPair {
+public class ArrayAccessPair {
     int array;
     int index;
 
-    public MyPair(int array, int index) {
+    public ArrayAccessPair(int array, int index) {
         this.array = array;
         this.index = index;
     }
