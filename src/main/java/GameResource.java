@@ -30,17 +30,22 @@ public class GameResource{
 
 
     //TODO: keep track of the value and the array that was depleted
-    synchronized public void apply(ArrayAccessPair myPair){
+    synchronized public int apply(ArrayAccessPair myPair){
+        int aux =0;
         if(myPair.array == 0){
+            aux = woodArray[myPair.index];
             woodArray[myPair.index] = 0;
         }
         else if(myPair.array == 1)
         {
+            aux= stoneArray[myPair.index];
             stoneArray[myPair.index] = 0;
         }
         else {
+            aux=goldArray[myPair.index];
             goldArray[myPair.index] = 0;
         }
+        return aux;
     }
 
 }

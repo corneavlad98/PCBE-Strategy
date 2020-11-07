@@ -43,7 +43,7 @@ Cladiri: case, biserica, scoala
 
 Casa:
 -timp de construire: 40s
--resurse necesare: 20 lemn, 40 piatra, 15 carne
+-resurse necesare: 20 lemn, 40 piatra
 
 Biserica:
 -timp de construire: 1 min 30s
@@ -51,7 +51,7 @@ Biserica:
 
 Scoala:
 -timp de construire: 1 min
--resurse necesare: 50 lemn, 30 piatra, 10 carne, 10 aur
+-resurse necesare: 50 lemn, 30 piatra, 10 aur
 
 
 !! Clasa publica ce initializeaza pe restul !!
