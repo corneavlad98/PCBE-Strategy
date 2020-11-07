@@ -1,3 +1,4 @@
+package oldCode;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -81,12 +82,12 @@ public class Board extends JPanel {
 
            }
        });
-       new Thread(() -> {
+       /*new Thread(() -> {
            while(true) {
                this.repaint();
            }
        }).start();
-    }
+    }*/
 
 
     public void paintComponent(Graphics g) {

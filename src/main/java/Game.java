@@ -1,24 +1,30 @@
 import java.util.Arrays;
 
 public class Game  {
-    private static GameResource gameResource;
-    private static Player player1 = new Player(1);
-    private static Player player2 = new Player(2);
+    private static GameResource gameResource = new GameResource();
+    private static Player player1 = new Player(gameResource);
+    private static Player player2 = new Player(gameResource);
 
     public static void main(String[] args) {
-        System.out.println(Thread.currentThread().getName());
+        System.out.println("thread " +Thread.currentThread().getName());
+        System.out.println("Initial wood: " + Arrays.toString(GameResource.woodArray));
+        System.out.println("Initial stone: "+ Arrays.toString(GameResource.stoneArray));
+        System.out.println("Initial gold: "+ Arrays.toString(GameResource.goldArray));
 
-        gameResource = new GameResource();
-        Thread t1 = new Thread(gameResource);
         Thread tp1 = new Thread(player1);
         Thread tp2 = new Thread(player2);
-        t1.start();
-        System.out.println(Arrays.toString(GameResource.woodArray));
-        System.out.println(Arrays.toString(GameResource.stoneArray));
-        System.out.println(Arrays.toString(GameResource.goldArray));
         tp1.start();
         tp2.start();
-        gameResource.apply(player1.randomEvent);
-        gameResource.apply(player2.randomEvent);
+        try {
+            tp1.join();
+            tp2.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Final wood: " + Arrays.toString(GameResource.woodArray));
+        System.out.println("Final stone: "+ Arrays.toString(GameResource.stoneArray));
+        System.out.println("Final gold: "+ Arrays.toString(GameResource.goldArray));
+
     }
 }

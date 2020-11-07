@@ -1,30 +1,42 @@
+import java.util.Random;
+
 public class Player implements Runnable {
-    //public GameResource gameResource;
+    protected GameResource gameResource = null;
     //TODO: Keep track of each resource
-    public MyPair randomEvent = new MyPair(1,1);
-    public int[] arr = new int[3];
+    private ArrayAccessPair randomPair;
     //aim is to get to an amount of each resource
-    private int id;
-    public Player (int id){
-        this.id = id;
+    public Player (GameResource gameResource){
+        this.gameResource = gameResource;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
     //TODO: Actually random
-    public void getRandomEvent() {
-        randomEvent = new MyPair(id,1);
-        System.out.println(" xxxx" +  randomEvent.array);
+    //generate random pair to select array and an index from it
+    public ArrayAccessPair generateRandomRemovePair()
+    {
+        Random r = new Random();
+        int arraySelect = r.nextInt(3);
+        int indexSelect = r.nextInt(MyConstants.ARRAY_MAX_LENGTH);
+        randomPair = new ArrayAccessPair(arraySelect,indexSelect);
+        return randomPair;
     }
 
-    public void setRandomEvent(MyPair randomEvent) {
-        this.randomEvent = randomEvent;
+    public void removeRandomly() {
+        ArrayAccessPair myPair = generateRandomRemovePair(); //generates random pair
+        gameResource.apply(myPair); //remove resource with the given pair
+        System.out.println(Thread.currentThread().getName() + " removed from array: " + myPair.getArray() + " resource from index: " + myPair.getIndex());
     }
 
     @Override
     public void run() {
-        System.out.println(this.id + " " + Thread.currentThread().getName());
-        getRandomEvent();
+        try{
+            for (int i = 0; i < 4; i++)
+            {
+                removeRandomly();
+                Thread.sleep(2000);
+            }
+
+        }catch (InterruptedException e){
+            System.out.println("Thread "+ Thread.currentThread().getName() + " interrupted");
+        }
     }
 }

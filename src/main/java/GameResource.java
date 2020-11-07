@@ -1,57 +1,47 @@
+
 import java.util.Arrays;
 import java.util.Random;
 
-public class GameResource implements Runnable {
+public class GameResource{
     public static int[] woodArray;
     public static int[] stoneArray;
     public static int[] goldArray;
-    private static GameResource instance = null;
-
 
     public GameResource() {
-        woodArray = generateRandomArray(MyConstants.WOOD_MAX_LENGTH);
-        stoneArray = generateRandomArray(MyConstants.STONE_MAX_LENGTH);
-        goldArray = generateRandomArray(MyConstants.GOLD_MAX_LENGTH);
-
+        //3 resources arrays, generated randomly
+        woodArray = generateRandomArray(MyConstants.ARRAY_MAX_LENGTH, 30, 120);
+        stoneArray = generateRandomArray(MyConstants.ARRAY_MAX_LENGTH, 20, 90);
+        goldArray = generateRandomArray(MyConstants.ARRAY_MAX_LENGTH, 5, 40);
     }
-    private static int[] generateRandomArray(int size){
-        int[] randArray = new int[size];
-        Random rand = new Random();
 
+    //generate array with given size that contains random numbers between given range
+    private static int[] generateRandomArray(int size, int randomLowerLimit, int randomUpperLimit) {
+        if (randomLowerLimit >= randomUpperLimit) {
+            throw new IllegalArgumentException("upper limit must be greater than lower limit");
+        }
+
+        int[] randArray = new int[size];
+        Random r = new Random();
         for (int i = 0; i < size; i++) {
-            randArray[i] = rand.nextInt(100);
+            randArray[i] = r.nextInt((randomUpperLimit - randomLowerLimit) + 1) + randomLowerLimit;
         }
         return randArray;
     }
 
 
-//    public static GameResource getInstance() {
-//        if(instance == null){
-//            instance = new GameResource();
-//        }
-//        return instance;
-//    }
     //TODO: keep track of the value and the array that was depleted
-    public void apply(MyPair myPair){
-
+    synchronized public void apply(ArrayAccessPair myPair){
         if(myPair.array == 0){
             woodArray[myPair.index] = 0;
-            System.out.println(Arrays.toString(woodArray));
         }
         else if(myPair.array == 1)
         {
             stoneArray[myPair.index] = 0;
-            System.out.println(Arrays.toString(stoneArray));
         }
         else {
             goldArray[myPair.index] = 0;
-            System.out.println(Arrays.toString(goldArray));
         }
     }
 
-    @Override
-    public void run() {
-        System.out.println("aaa" + Thread.currentThread().getName());
-    }
 }
 
