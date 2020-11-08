@@ -5,8 +5,8 @@ public class Player implements Runnable {
     private volatile int stoneResource;
     private volatile int woodResource;
     private volatile int  houseCount = 0;
-
-
+    private static boolean stopRequested = false;
+    private static boolean isGameOn = true;
     protected GameResource gameResource = null;
     private ArrayAccessPair randomPair;
     //aim is to get to an amount of each resource
@@ -14,8 +14,14 @@ public class Player implements Runnable {
         this.gameResource = gameResource;
     }
 
-    //TODO: Actually random
-    //generate random pair to select array and an index from it
+    public static synchronized boolean isStopRequested() {
+        return stopRequested;
+    }
+
+    public static synchronized void requestStop(){
+        stopRequested = true;
+    }
+
     public ArrayAccessPair generateRandomRemovePair()
     {
         Random r = new Random();
@@ -37,16 +43,16 @@ public class Player implements Runnable {
         else if(myPair.array==2){
             goldResource+=aux;
         }
-        System.out.println(Thread.currentThread().getName() + "["+ myPair.getArray() + "," + myPair.getIndex()+ "] and got value: " + aux);
+        System.out.println(Thread.currentThread().getName() + " ["+ myPair.getArray() + "," + myPair.getIndex()+ "] and got value: " + aux);
     }
 
     @Override
     public void run() {
         try{
-            while (true)
-                {
+            while (!isStopRequested())
+            {
                 removeRandomly();
-                if(woodResource >= MyConstants.WOOD_FOR_HOUSE && stoneResource>=MyConstants.STONE_FOR_HOUSE && goldResource>=MyConstants.GOLD_FOR_HOUSE)
+                if(woodResource >= MyConstants.WOOD_FOR_HOUSE && stoneResource >= MyConstants.STONE_FOR_HOUSE && goldResource >= MyConstants.GOLD_FOR_HOUSE)
                 {
                     System.out.println(Thread.currentThread().getName() + " Resources for house ready");
                     System.out.println(Thread.currentThread().getName() + " Building house...");
@@ -56,12 +62,16 @@ public class Player implements Runnable {
                     woodResource -= MyConstants.WOOD_FOR_HOUSE;
                     stoneResource -= MyConstants.STONE_FOR_HOUSE;
                     goldResource -= MyConstants.GOLD_FOR_HOUSE;
-                    if(houseCount==3)
-                        break;
+                    if(houseCount==3){
+                        requestStop();
+                    }
                 }
                 Thread.sleep(500);
             }
-            System.out.println(Thread.currentThread().getName() + "won");
+            if(isGameOn) {
+                System.out.println(Thread.currentThread().getName() + " won");
+                isGameOn = false;
+            }
             System.out.println(Thread.currentThread().getName() + " Wood value: " + woodResource);
             System.out.println(Thread.currentThread().getName() + " Gold value: " + goldResource);
             System.out.println(Thread.currentThread().getName() + " Stone value: " + stoneResource);
