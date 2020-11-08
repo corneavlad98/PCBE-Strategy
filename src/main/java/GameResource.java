@@ -1,5 +1,3 @@
-
-import java.util.Arrays;
 import java.util.Random;
 
 public class GameResource{
@@ -8,13 +6,11 @@ public class GameResource{
     public static int[] goldArray;
 
     public GameResource() {
-        //3 resources arrays, generated randomly
         woodArray = generateRandomArray(MyConstants.ARRAY_MAX_LENGTH, 30, 120);
         stoneArray = generateRandomArray(MyConstants.ARRAY_MAX_LENGTH, 20, 90);
         goldArray = generateRandomArray(MyConstants.ARRAY_MAX_LENGTH, 5, 40);
     }
 
-    //generate array with given size that contains random numbers between given range
     private static int[] generateRandomArray(int size, int randomLowerLimit, int randomUpperLimit) {
         if (randomLowerLimit >= randomUpperLimit) {
             throw new IllegalArgumentException("upper limit must be greater than lower limit");
@@ -28,8 +24,6 @@ public class GameResource{
         return randArray;
     }
 
-
-    //TODO: keep track of the value and the array that was depleted
     synchronized public int apply(ArrayAccessPair myPair){
         int aux =0;
         if(myPair.array == 0){
