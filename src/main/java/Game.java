@@ -5,7 +5,7 @@ public class Game  {
     private static Player player1 = new Player(gameResource);
     private static Player player2 = new Player(gameResource);
 
-    public static void main(String[] args) {
+    public static void main(String[] args){
         System.out.println("thread " +Thread.currentThread().getName());
         System.out.println("Initial wood: " + Arrays.toString(GameResource.woodArray));
         System.out.println("Initial stone: "+ Arrays.toString(GameResource.stoneArray));
@@ -15,16 +15,5 @@ public class Game  {
         Thread tp2 = new Thread(player2, MyConstants.THREAD_TWO_NAME);
         tp1.start();
         tp2.start();
-        try {
-            tp1.join();
-            tp2.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println("Final wood: " + Arrays.toString(GameResource.woodArray));
-        System.out.println("Final stone: "+ Arrays.toString(GameResource.stoneArray));
-        System.out.println("Final gold: "+ Arrays.toString(GameResource.goldArray));
-
     }
 }
