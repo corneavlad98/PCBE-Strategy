@@ -28,11 +28,11 @@ public class GameResource{
 
     synchronized public int apply(ArrayAccessPair myPair){
         int aux =0;
-        if(myPair.array == 0){
+        if(myPair.array == Resource.WOOD){
             aux = woodArray[myPair.index];
             woodArray[myPair.index] = 0;
         }
-        else if(myPair.array == 1)
+        else if(myPair.array == Resource.STONE)
         {
             aux= stoneArray[myPair.index];
             stoneArray[myPair.index] = 0;

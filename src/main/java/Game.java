@@ -1,11 +1,18 @@
+import com.sun.tools.javac.Main;
+
 import java.util.Arrays;
 
 public class Game  {
     private static GameResource gameResource = new GameResource();
     private static Player player1 = new Player(gameResource);
     private static Player player2 = new Player(gameResource);
+    public static Object lock = new Object();
 
     public static void main(String[] args){
+        new Game();
+    }
+
+    public Game() {
         System.out.println("thread " +Thread.currentThread().getName());
         System.out.println("Initial wood: " + Arrays.toString(GameResource.woodArray));
         System.out.println("Initial stone: "+ Arrays.toString(GameResource.stoneArray));
@@ -15,5 +22,23 @@ public class Game  {
         Thread tp2 = new Thread(player2, MyConstants.THREAD_TWO_NAME);
         tp1.start();
         tp2.start();
+        synchronized (lock) {
+            try {
+                lock.wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("Resumed");
+            //System.exit(0);
+            player1.stopThread();
+            player2.stopThread();
+            tp1.interrupt();
+            tp2.interrupt();
+            System.out.println("Final wood: " + Arrays.toString(GameResource.woodArray));
+            System.out.println("Final stone: "+ Arrays.toString(GameResource.stoneArray));
+            System.out.println("Final gold: "+ Arrays.toString(GameResource.goldArray));
+        }
+
     }
+
 }
