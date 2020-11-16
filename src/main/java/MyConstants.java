@@ -9,7 +9,7 @@ public class MyConstants {
     public static final String THREAD_ONE_NAME = "Player 1";
     public static final String THREAD_TWO_NAME = "Player 2";
     public static final int ARRAY_MAX_LENGTH = 30;
-
+    public static Object lock = new Object();
 
 
 

@@ -15,5 +15,22 @@ public class Game  {
         Thread tp2 = new Thread(player2, MyConstants.THREAD_TWO_NAME);
         tp1.start();
         tp2.start();
+        synchronized (MyConstants.lock) {
+            try {
+                MyConstants.lock.wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("Resumed");
+
+            tp1.interrupt();
+            tp2.interrupt();
+            player1.stopThread();
+            player2.stopThread();
+
+            System.out.println("Final wood: " + Arrays.toString(GameResource.woodArray));
+            System.out.println("Final stone: "+ Arrays.toString(GameResource.stoneArray));
+            System.out.println("Final gold: "+ Arrays.toString(GameResource.goldArray));
+        }
     }
 }

@@ -4,9 +4,6 @@ public class GameResource{
     public static int[] woodArray;
     public static int[] stoneArray;
     public static int[] goldArray;
-    public int[] getWoodArray() {
-        return woodArray;
-    }
     public GameResource() {
         woodArray = generateRandomArray(MyConstants.ARRAY_MAX_LENGTH, 30, 120);
         stoneArray = generateRandomArray(MyConstants.ARRAY_MAX_LENGTH, 20, 90);

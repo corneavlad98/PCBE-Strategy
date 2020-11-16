@@ -38,39 +38,48 @@ public class Player implements Runnable {
         else if(myPair.array==2){
             goldResource+=aux;
         }
-       System.out.println(Thread.currentThread().getName() + " ["+ myPair.getArray() + "," + myPair.getIndex()+ "] and got value: " + aux);
+        //System.out.println(Thread.currentThread().getName() + " ["+ myPair.getArray() + "," + myPair.getIndex()+ "] and got value: " + aux);
     }
-    public void gameFinish()
-    {
-        System.out.println(Thread.currentThread().getName() + " won");
-        System.out.println(Thread.currentThread().getName() + " Wood value: " + woodResource);
-        System.out.println(Thread.currentThread().getName() + " Gold value: " + goldResource);
-        System.out.println(Thread.currentThread().getName() + " Stone value: " + stoneResource);
-        System.out.println("Final wood: " + Arrays.toString(GameResource.woodArray));
-        System.out.println("Final stone: "+ Arrays.toString(GameResource.stoneArray));
-        System.out.println("Final gold: "+ Arrays.toString(GameResource.goldArray));
-        System.exit(0);
+    public void stopThread() {
+        exit = true;
     }
     @Override
     public void run() {
-        while (!exit) {
-            try {
-                removeRandomly();
-                if (woodResource >= MyConstants.WOOD_FOR_HOUSE && stoneResource >= MyConstants.STONE_FOR_HOUSE && goldResource >= MyConstants.GOLD_FOR_HOUSE) {
-                    System.out.println(Thread.currentThread().getName() + " Resources for house ready");
-                    System.out.println(Thread.currentThread().getName() + " Building house...");
-                    Thread.sleep(3000);
-                    System.out.println(Thread.currentThread().getName() + " House built");
-                    houseCount++;
-                    woodResource -= MyConstants.WOOD_FOR_HOUSE;
-                    stoneResource -= MyConstants.STONE_FOR_HOUSE;
-                    goldResource -= MyConstants.GOLD_FOR_HOUSE;
-                    if (houseCount == 3) {
-                        exit = true;
-                        gameFinish();
+        while (!exit && !Thread.currentThread().isInterrupted())
+        {
+            try
+            {
+                if(houseCount != 3)
+                {
+                    try
+                    {
+                        removeRandomly();
+                        if (woodResource >= MyConstants.WOOD_FOR_HOUSE && stoneResource >= MyConstants.STONE_FOR_HOUSE && goldResource >= MyConstants.GOLD_FOR_HOUSE)
+                        {
+                            System.out.println(Thread.currentThread().getName() + " Resources for house ready");
+                            System.out.println(Thread.currentThread().getName() + " Building house...");
+                            Thread.sleep(3000);
+                            System.out.println(Thread.currentThread().getName() + " House built");
+                            houseCount++;
+                            woodResource -= MyConstants.WOOD_FOR_HOUSE;
+                            stoneResource -= MyConstants.STONE_FOR_HOUSE;
+                            goldResource -= MyConstants.GOLD_FOR_HOUSE;
+                        }
+                    }catch (InterruptedException e)
+                    {
+                        System.out.println(Thread.currentThread().getName() + " got interupted in 3000ms sleep!");
+                    }
+                    Thread.sleep(500);
+                }
+                else
+                {
+                    synchronized (MyConstants.lock)
+                    {
+                        System.out.println(Thread.currentThread().getName() + " won");
+                        MyConstants.lock.notify();
+                        Thread.currentThread().interrupt();
                     }
                 }
-                Thread.sleep(500);
             } catch (InterruptedException e) {
                 System.out.println(Thread.currentThread().getName() + " got interupted");
             }
