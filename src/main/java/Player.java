@@ -20,25 +20,26 @@ public class Player implements Runnable {
     public ArrayAccessPair generateRandomRemovePair()
     {
         Random r = new Random();
+        Resource arr[] = Resource.values();
         int arraySelect = r.nextInt(3);
         int indexSelect = r.nextInt(MyConstants.ARRAY_MAX_LENGTH);
-        randomPair = new ArrayAccessPair(arraySelect,indexSelect);
+        randomPair = new ArrayAccessPair(arr[arraySelect], indexSelect);
         return randomPair;
     }
 
     public void removeRandomly() {
         ArrayAccessPair myPair = generateRandomRemovePair(); //generates random pair
         int aux = gameResource.apply(myPair);
-        if(myPair.array==0){
+        if(myPair.array==Resource.WOOD){
             woodResource+=aux;
         }
-        else if(myPair.array==1){
+        else if(myPair.array==Resource.STONE){
             stoneResource+=aux;
         }
-        else if(myPair.array==2){
+        else if(myPair.array==Resource.GOLD){
             goldResource+=aux;
         }
-        //System.out.println(Thread.currentThread().getName() + " ["+ myPair.getArray() + "," + myPair.getIndex()+ "] and got value: " + aux);
+        System.out.println(Thread.currentThread().getName() + " ["+ myPair.getArray() + "," + myPair.getIndex()+ "] and got value: " + aux);
     }
     public void stopThread() {
         exit = true;

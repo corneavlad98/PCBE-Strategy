@@ -1,17 +1,17 @@
 public class ArrayAccessPair {
-    int array;
+    Resource array;
     int index;
 
-    public ArrayAccessPair(int array, int index) {
+    public ArrayAccessPair(Resource array, int index) {
         this.array = array;
         this.index = index;
     }
 
-    public int getArray() {
+    public Resource getArray() {
         return array;
     }
 
-    public void setArray(int array) {
+    public void setArray(Resource array) {
         this.array = array;
     }
 
