@@ -1,0 +1,17 @@
+Events:
+
+ResourceCollect = Luarea resursei  ---- Player
+ResourceAdeed = adaugat la total de resurse al playerului  --- Player
+ResourceSelect = selectarea random a resursei  --- Player
+ResourceEmptied = nu mai e resursa pe indexul respectiv  --- Resursa
+
+ObjectiveMaterialsCompleted = S-a ajuns la materialele necesare pt crearea unui obj  --- Player
+CreateObjective = se creeaza obj  --- Player
+FinishObjective = terminarea obiectivului  --- Player
+ResourceUsed = scoaterea resurselor folosite din totalul playerului  --- Player
+WinCondtionAchieved = cand se ajunge la 3 case construite  --- Player
+PlayerWon = castigarea unui player  --- Player
+
+GameTerminate? = oprirea jocului de catre main  --- Main
+
+
