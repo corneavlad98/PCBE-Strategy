@@ -1,3 +1,7 @@
+package game;
+
+import game.ArrayAccessPair;
+
 import java.util.Random;
 
 public class GameResource{
@@ -29,8 +33,7 @@ public class GameResource{
             aux = woodArray[myPair.index];
             woodArray[myPair.index] = 0;
         }
-        else if(myPair.array == Resource.STONE)
-        {
+        else if(myPair.array == Resource.STONE) {
             aux= stoneArray[myPair.index];
             stoneArray[myPair.index] = 0;
         }

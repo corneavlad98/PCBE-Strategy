@@ -1,3 +1,5 @@
+package game;
+
 public class ArrayAccessPair {
     Resource array;
     int index;
