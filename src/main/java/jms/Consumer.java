@@ -2,50 +2,60 @@ package jms;
 
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.springframework.jms.core.BrowserCallback;
 
 import javax.jms.*;
-public class Consumer implements Runnable, ExceptionListener {
+import java.util.Collections;
+import java.util.Enumeration;
+
+public class Consumer implements ExceptionListener {
     private static String url = ActiveMQConnection.DEFAULT_BROKER_URL;
 
-    public void run() {
-        try {
+    private String clientId;
+    private Connection connection;
+    private Session session;
+    private MessageConsumer messageConsumer;
 
-            // Create a ConnectionFactory
-            ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(url);
+    public void create(String clientId, String queueName) throws JMSException {
+        this.clientId = clientId;
+        // Create a ConnectionFactory
+        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(url);
 
-            // Create a Connection
-            Connection connection = connectionFactory.createConnection();
-            connection.start();
+        // Create a Connection
+        connection = connectionFactory.createConnection();
+        connection.start();
 
-            connection.setExceptionListener(this);
+        connection.setExceptionListener(this);
 
-            // Create a Session
-            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        // Create a Session
+        session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-            // Create the destination (Topic or Queue)
-            Destination destination = session.createQueue("TEST.FOO");
+        // Create the destination (Topic or Queue)
+        Queue queue = session.createQueue(queueName);
 
-            // Create a MessageConsumer from the Session to the Topic or Queue
-            MessageConsumer consumer = session.createConsumer(destination);
 
-            // Wait for a message
-            Message message = consumer.receive(1000);
+        // Create a MessageProducer from the Session to the Topic or Queue
+        messageConsumer = session.createConsumer(queue);
 
-            if (message instanceof TextMessage) {
-                TextMessage textMessage = (TextMessage) message;
-                String text = textMessage.getText();
-                System.out.println("Received: " + text);
-            } else {
-                System.out.println("Received: " + message);
-            }
+    }
 
-            consumer.close();
-            session.close();
-            connection.close();
-        } catch (Exception e) {
-            System.out.println("Caught: " + e);
-            e.printStackTrace();
+    public String receiveMessage() throws JMSException {
+        Message message = messageConsumer.receive(1000);
+        if (message instanceof TextMessage) {
+            TextMessage textMessage = (TextMessage) message;
+            String text = textMessage.getText();
+            //System.out.println("Received: " + text);
+            return text;
+        } else {
+            //System.out.println("Received: " + message);
+            return message.toString();
         }
+    }
+
+    public void close() throws JMSException {
+        messageConsumer.close();
+        session.close();
+        connection.close();
     }
 
     public synchronized void onException(JMSException ex) {

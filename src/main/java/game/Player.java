@@ -1,9 +1,8 @@
 package game;
 
-import game.ArrayAccessPair;
-import game.GameResource;
-import game.MyConstants;
+import jms.Producer;
 
+import javax.jms.JMSException;
 import java.util.Random;
 
 public class Player implements Runnable {
@@ -11,16 +10,17 @@ public class Player implements Runnable {
     private volatile int goldResource;
     private volatile int stoneResource;
     private volatile int woodResource;
-    private int  houseCount = 0;
+    private Producer producer;
+    private int houseCount = 0;
 
     private static boolean stopRequested = false;
     protected GameResource gameResource = null;
     private ArrayAccessPair randomPair;
-
     private volatile boolean exit = false;
 
-    public Player (GameResource gameResource){
+    public Player (GameResource gameResource, Producer producer){
         this.gameResource = gameResource;
+        this.producer = producer;
     }
     public ArrayAccessPair generateRandomRemovePair()
     {
@@ -32,7 +32,7 @@ public class Player implements Runnable {
         return randomPair;
     }
 
-    public void removeRandomly() {
+    public void removeRandomly() throws JMSException {
         ArrayAccessPair myPair = generateRandomRemovePair(); //generates random pair
         int aux = gameResource.apply(myPair);
         if(myPair.array== Resource.WOOD){
@@ -44,7 +44,8 @@ public class Player implements Runnable {
         else if(myPair.array== Resource.GOLD){
             goldResource+=aux;
         }
-        System.out.println(Thread.currentThread().getName() + " ["+ myPair.getArray() + "," + myPair.getIndex()+ "] and got value: " + aux);
+//        System.out.println(Thread.currentThread().getName() + " ["+ myPair.getArray() + "," + myPair.getIndex()+ "] and got value: " + aux);
+        this.producer.sendMessage(myPair.getArray().ordinal(), myPair.getIndex());
     }
     public void stopThread() {
         exit = true;
@@ -55,12 +56,16 @@ public class Player implements Runnable {
             try {
                 if(houseCount != 3) {
                     try {
-                        removeRandomly();
+                        try {
+                            removeRandomly();
+                        } catch (JMSException e) {
+                            e.printStackTrace();
+                        }
                         if (woodResource >= MyConstants.WOOD_FOR_HOUSE && stoneResource >= MyConstants.STONE_FOR_HOUSE && goldResource >= MyConstants.GOLD_FOR_HOUSE) {
-                            System.out.println(Thread.currentThread().getName() + " Resources for house ready");
-                            System.out.println(Thread.currentThread().getName() + " Building house...");
+                            producer.sendTerminalMessage(Thread.currentThread().getName() + " Resources for house ready");
+                            producer.sendTerminalMessage(Thread.currentThread().getName() + " Building house...");
                             Thread.sleep(3000);
-                            System.out.println(Thread.currentThread().getName() + " House built");
+                            producer.sendTerminalMessage(Thread.currentThread().getName() + " House built");
                             houseCount++;
                             woodResource -= MyConstants.WOOD_FOR_HOUSE;
                             stoneResource -= MyConstants.STONE_FOR_HOUSE;
@@ -68,18 +73,22 @@ public class Player implements Runnable {
                         }
                     } catch (InterruptedException e) {
                         System.out.println(Thread.currentThread().getName() + " got interupted in 3000ms sleep!");
+                    } catch (JMSException e) {
+                        e.printStackTrace();
                     }
                     Thread.sleep(500);
                 }
                 else {
                     synchronized (MyConstants.lock) {
-                        System.out.println(Thread.currentThread().getName() + " won");
+                        producer.sendTerminalMessage(Thread.currentThread().getName() + " won");
                         MyConstants.lock.notify();
                         Thread.currentThread().interrupt();
                     }
                 }
             } catch (InterruptedException e) {
                 System.out.println(Thread.currentThread().getName() + " got interupted");
+            } catch (JMSException e) {
+                e.printStackTrace();
             }
         }
     }

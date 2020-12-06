@@ -4,42 +4,62 @@ import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
 import javax.jms.*;
-public  class Producer implements Runnable {
+public  class Producer {
+    private String clientId;
+    private Connection connection;
+    private Session session;
+    private MessageProducer messageProducer;
+    private int sentMessages = 0;
+
     private static String url = ActiveMQConnection.DEFAULT_BROKER_URL;
-    public void run() {
-        try {
-            // Create a ConnectionFactory
-            ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(url);
 
-            // Create a Connection
-            Connection connection = connectionFactory.createConnection();
-            connection.start();
+    public int getSentMessages() {
+        return sentMessages;
+    }
 
-            // Create a Session
-            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+    public void create(String clientId, String queueName) throws JMSException {
+        this.clientId = clientId;
+        // Create a ConnectionFactory
+        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(url);
 
-            // Create the destination (Topic or Queue)
-            Destination destination = session.createQueue("testing");
+        // Create a Connection
+        connection = connectionFactory.createConnection();
+        connection.start();
 
-            // Create a MessageProducer from the Session to the Topic or Queue
-            MessageProducer producer = session.createProducer(destination);
-            producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+        // Create a Session
+        session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-            // Create a messages
-            String text = "Hello world! From: " + Thread.currentThread().getName() + " : " + this.hashCode();
-            TextMessage message = session.createTextMessage(text);
+        // Create the destination (Topic or Queue)
+        Queue queue = session.createQueue(queueName);
 
-            // Tell the producer to send the message
-            System.out.println("Sent message: "+ message.hashCode() + " : " + Thread.currentThread().getName());
-            producer.send(message);
 
-            // Clean up
-            session.close();
-            connection.close();
-        }
-        catch (Exception e) {
-            System.out.println("Caught: " + e);
-            e.printStackTrace();
-        }
+        // Create a MessageProducer from the Session to the Topic or Queue
+        messageProducer = session.createProducer(queue);
+        messageProducer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+    }
+
+    public void sendMessage(int arr, int val) throws JMSException {
+        String message = arr + " " + val;
+         // create a JMS TextMessage
+        TextMessage textMessage = session.createTextMessage(message);
+
+        // send the message to the topic destination
+        messageProducer.send(textMessage);
+        this.sentMessages++;
+        System.out.println(clientId + ": sent message with text={" + message + "}");
+    }
+
+    public void sendTerminalMessage(String message) throws JMSException {
+        TextMessage textMessage = session.createTextMessage(message);
+        // send the message to the topic destination
+        messageProducer.send(textMessage);
+        this.sentMessages++;
+        System.out.println(clientId + ": sent message with text={" + message + "}");
+
+    }
+
+    public void close() throws JMSException {
+        session.close();
+        connection.close();
     }
 }

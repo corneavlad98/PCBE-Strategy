@@ -1,7 +1,5 @@
 package game;
 
-import game.ArrayAccessPair;
-
 import java.util.Random;
 
 public class GameResource{
@@ -28,7 +26,7 @@ public class GameResource{
     }
 
     synchronized public int apply(ArrayAccessPair myPair){
-        int aux =0;
+        int aux = 0;
         if(myPair.array == Resource.WOOD){
             aux = woodArray[myPair.index];
             woodArray[myPair.index] = 0;
