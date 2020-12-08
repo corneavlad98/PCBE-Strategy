@@ -32,7 +32,6 @@ public  class Producer {
         // Create the destination (Topic or Queue)
         Queue queue = session.createQueue(queueName);
 
-
         // Create a MessageProducer from the Session to the Topic or Queue
         messageProducer = session.createProducer(queue);
         messageProducer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
@@ -40,16 +39,10 @@ public  class Producer {
 
     public void sendMessage(int arr, int val) throws JMSException {
         String message = arr + " " + val;
-         // create a JMS TextMessage
-        TextMessage textMessage = session.createTextMessage(message);
-
-        // send the message to the topic destination
-        messageProducer.send(textMessage);
-        this.sentMessages++;
-        System.out.println(clientId + ": sent message with text={" + message + "}");
+        sendMessage(message);
     }
 
-    public void sendTerminalMessage(String message) throws JMSException {
+    public void sendMessage(String message) throws JMSException {
         TextMessage textMessage = session.createTextMessage(message);
         // send the message to the topic destination
         messageProducer.send(textMessage);

@@ -33,7 +33,6 @@ public class Consumer implements ExceptionListener {
         // Create the destination (Topic or Queue)
         Queue queue = session.createQueue(queueName);
 
-
         // Create a MessageProducer from the Session to the Topic or Queue
         messageConsumer = session.createConsumer(queue);
 
@@ -44,10 +43,8 @@ public class Consumer implements ExceptionListener {
         if (message instanceof TextMessage) {
             TextMessage textMessage = (TextMessage) message;
             String text = textMessage.getText();
-            //System.out.println("Received: " + text);
             return text;
         } else {
-            //System.out.println("Received: " + message);
             return message.toString();
         }
     }

@@ -1,0 +1,19 @@
+TOPICS:
+    1.RESOURCES obiectul este de tipul MyPair(int type, int value, String identifier) mainThread = publisher && Players = subscribers, asociem mesajului un id, trimitem cate doua
+    identifierul e carui player i se atribuie resursa
+
+    2.TO_PLAYERS primeste un String;
+    notify a player to start building a house
+    notificare inapoi sa continue consumarea de resurse (subscribe la RESOURCES)
+    !INCHIDEREA JOCULUI! + {winning player}
+
+
+QUEUE:
+     1.each player to main to notify house ready to be built;
+     each player to main notify building house
+     each player to main notify house built
+     each player to main notify 3 houses built
+
+
+
+!How not to consume the message when it's not for you (study subscriber)

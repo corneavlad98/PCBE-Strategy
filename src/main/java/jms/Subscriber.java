@@ -20,13 +20,14 @@ public class Subscriber {
     private static final String NO_GREETING = "no greeting";
     private String clientId;
     private Connection connection;
-    private MessageConsumer messageConsumer;
+    public MessageConsumer messageConsumer;
 
     public void create(String clientId, String topicName) throws JMSException {
         this.clientId = clientId;
 
         // create a Connection Factory
         ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(ActiveMQConnection.DEFAULT_BROKER_URL);
+        ((ActiveMQConnectionFactory) connectionFactory).setTrustAllPackages(true);
 
         // create a Connection
         connection = connectionFactory.createConnection();

@@ -1,17 +1,11 @@
 package jms;
 
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-import javax.jms.Topic;
+import javax.jms.*;
 
+import game.ArrayAccessPair;
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import part2.MyPair;
 
 public class Publisher {
 
@@ -25,6 +19,7 @@ public class Publisher {
 
         // create a Connection Factory
         ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(ActiveMQConnection.DEFAULT_BROKER_URL);
+        ((ActiveMQConnectionFactory) connectionFactory).setTrustAllPackages(true);
 
         // create a Connection
         connection = connectionFactory.createConnection();
@@ -44,8 +39,15 @@ public class Publisher {
         connection.close();
     }
 
-    public void sendName(String firstName, String lastName) throws JMSException {
-        String text = firstName + " " + lastName;
+    public void sendMessage(MyPair accessPair) throws JMSException {
+        ObjectMessage objectMessage = session.createObjectMessage(accessPair);
+
+        messageProducer.send(objectMessage);
+
+        System.out.println("sent object message " + accessPair);
+    }
+
+    public void sendMessage(String text) throws JMSException {
 
         // create a JMS TextMessage
         TextMessage textMessage = session.createTextMessage(text);
