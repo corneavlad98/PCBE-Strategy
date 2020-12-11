@@ -1,40 +1,56 @@
 package part2;
 
-import jms.Producer;
 import jms.Publisher;
 
 import javax.jms.JMSException;
 import java.util.Random;
 
 public class ResourceGenerator implements Runnable {
-
+    String clientId;
     Publisher publisher = new Publisher();
-    public ResourceGenerator(String s) throws JMSException {
-        publisher.create(s, "aaa.t");
+
+    public ResourceGenerator(String clientId, String topicName) throws JMSException {
+        this.clientId = clientId;
+        publisher.create(clientId, topicName);
     }
+
     @Override
     public void run() {
         int i = 0;
-        while (i < 10) {
+        while (i < 6) {
             try {
-                Thread.sleep(2000);
-                publisher.sendMessage(new MyPair(generateRandomResource(), generateRandomResource()));
+                Thread.sleep(1000);
+
+                //trimitem resurse pentru ambii playeri
+                publisher.sendMessage(new MyResource(clientId, generateRandomResource(), "player1"));
+                publisher.sendMessage(new MyResource(clientId, generateRandomResource(),"player2"));
                 i++;
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            } catch (JMSException e) {
+            }   catch (JMSException e) {
                 e.printStackTrace();
             }
-        }
-        try {
-            publisher.closeConnection();
-        } catch (JMSException e) {
-            e.printStackTrace();
         }
     }
 
     private int generateRandomResource() {
-        Random random = new Random();
-        return random.nextInt(10);
+        if(clientId.equals("woodResource")) {
+           return generateRandomWithLimits(30,120);
+        }
+        if(clientId.equals("stoneResource")) {
+            return generateRandomWithLimits(20,90);
+        }
+        if(clientId.equals("goldResource")) {
+            return generateRandomWithLimits(5,40);
+        }
+        return 0;
+    }
+    private int generateRandomWithLimits(int randomLowerLimit, int randomUpperLimit) {
+        if (randomLowerLimit >= randomUpperLimit) {
+            throw new IllegalArgumentException("upper limit must be greater than lower limit");
+        }
+
+        Random r = new Random();
+        return r.nextInt((randomUpperLimit - randomLowerLimit) + 1) + randomLowerLimit;
     }
 }

@@ -13,9 +13,4 @@ public class MyConstants {
     public static final int ARRAY_MAX_LENGTH = 30;
     public static Object lock = new Object();
 
-    public static final String PLAYER_TOPIC = "player_topic.t";
-    public static final String PLAYER_QUEUE = "player_queue.q";
-
-
-
 }

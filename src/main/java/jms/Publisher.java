@@ -2,10 +2,9 @@ package jms;
 
 import javax.jms.*;
 
-import game.ArrayAccessPair;
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
-import part2.MyPair;
+import part2.MyResource;
 
 public class Publisher {
 
@@ -18,8 +17,8 @@ public class Publisher {
         this.clientId = clientId;
 
         // create a Connection Factory
-        ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(ActiveMQConnection.DEFAULT_BROKER_URL);
-        ((ActiveMQConnectionFactory) connectionFactory).setTrustAllPackages(true);
+        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(ActiveMQConnection.DEFAULT_BROKER_URL);
+        connectionFactory.setTrustAllPackages(true);
 
         // create a Connection
         connection = connectionFactory.createConnection();
@@ -39,22 +38,23 @@ public class Publisher {
         connection.close();
     }
 
-    public void sendMessage(MyPair accessPair) throws JMSException {
-        ObjectMessage objectMessage = session.createObjectMessage(accessPair);
+    public void sendMessage(MyResource myResource) throws JMSException {
+        ObjectMessage objectMessage = session.createObjectMessage(myResource);
+        objectMessage.setStringProperty("destination", myResource.getDestination());
 
         messageProducer.send(objectMessage);
 
-        System.out.println("sent object message " + accessPair);
+        //System.out.println("sent object message " + myResource);
     }
 
-    public void sendMessage(String text) throws JMSException {
-
-        // create a JMS TextMessage
-        TextMessage textMessage = session.createTextMessage(text);
-
-        // send the message to the topic destination
-        messageProducer.send(textMessage);
-
-        System.out.println(clientId + ": sent message with text={" + text + "}");
-    }
+//    public void sendMessage(String text) throws JMSException {
+//
+//        // create a JMS TextMessage
+//        TextMessage textMessage = session.createTextMessage(text);
+//
+//        // send the message to the topic destination
+//        messageProducer.send(textMessage);
+//
+//        System.out.println(clientId + ": sent message with text={" + text + "}");
+//    }
 }
