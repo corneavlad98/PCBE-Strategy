@@ -40,7 +40,7 @@ public class Publisher {
 
     public void sendMessage(MyResource myResource) throws JMSException {
         ObjectMessage objectMessage = session.createObjectMessage(myResource);
-        objectMessage.setStringProperty("destination", myResource.getDestination());
+      //  objectMessage.setStringProperty("destination", myResource.getDestination());
 
         messageProducer.send(objectMessage);
 

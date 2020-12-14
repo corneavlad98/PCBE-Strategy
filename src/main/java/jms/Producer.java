@@ -2,6 +2,7 @@ package jms;
 
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import part2.MyResource;
 
 import javax.jms.*;
 public  class Producer {
@@ -21,6 +22,7 @@ public  class Producer {
         this.clientId = clientId;
         // Create a ConnectionFactory
         ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(url);
+        connectionFactory.setTrustAllPackages(true);
 
         // Create a Connection
         connection = connectionFactory.createConnection();
@@ -49,6 +51,20 @@ public  class Producer {
         this.sentMessages++;
         System.out.println(clientId + ": sent message with text={" + message + "}");
 
+    }
+
+    public void sendMessage(MyResource myResource) throws JMSException {
+        ObjectMessage objectMessage = session.createObjectMessage(myResource);
+
+        System.out.println("Got " + myResource);
+
+        messageProducer.send(objectMessage);
+
+        //System.out.println("sent object message " + myResource);
+    }
+
+    public String getClientId() {
+        return clientId;
     }
 
     public void close() throws JMSException {

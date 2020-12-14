@@ -17,7 +17,7 @@ public class ResourceListener implements MessageListener {
                 //String destination = message.getStringProperty("destination");
                 MyResource resourceMessage =  (MyResource) ((ObjectMessage) message).getObject();
 
-                System.out.println(resourceMessage.destination + " " + resourceMessage.resourceType + " value is: " + resourceMessage.resourceValue);
+
                 setResourceValue(resourceMessage.resourceType, resourceMessage.resourceValue);
 
             } catch (JMSException e) {

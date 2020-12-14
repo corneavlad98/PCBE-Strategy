@@ -13,13 +13,15 @@ public class Consumer implements ExceptionListener {
 
     private String clientId;
     private Connection connection;
-    private Session session;
-    private MessageConsumer messageConsumer;
+    public Session session;
+    public MessageConsumer messageConsumer;
+    public Queue queue;
 
     public void create(String clientId, String queueName) throws JMSException {
         this.clientId = clientId;
         // Create a ConnectionFactory
         ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(url);
+        connectionFactory.setTrustAllPackages(true);
 
         // Create a Connection
         connection = connectionFactory.createConnection();
@@ -31,7 +33,7 @@ public class Consumer implements ExceptionListener {
         session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
         // Create the destination (Topic or Queue)
-        Queue queue = session.createQueue(queueName);
+        queue = session.createQueue(queueName);
 
         // Create a MessageProducer from the Session to the Topic or Queue
         messageConsumer = session.createConsumer(queue);
