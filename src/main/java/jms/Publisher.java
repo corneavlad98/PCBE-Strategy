@@ -43,18 +43,16 @@ public class Publisher {
         objectMessage.setStringProperty("destination", myResource.getDestination());
 
         messageProducer.send(objectMessage);
-
-        //System.out.println("sent object message " + myResource);
+        System.out.println("sent object message " + myResource.getResourceType() + " " + myResource.getResourceValue() + " for " + myResource.getDestination());
     }
 
-//    public void sendMessage(String text) throws JMSException {
-//
-//        // create a JMS TextMessage
-//        TextMessage textMessage = session.createTextMessage(text);
-//
-//        // send the message to the topic destination
-//        messageProducer.send(textMessage);
-//
-//        System.out.println(clientId + ": sent message with text={" + text + "}");
-//    }
+    public void sendMessage(String text) throws JMSException {
+        // create a JMS TextMessage
+        TextMessage textMessage = session.createTextMessage(text);
+        //textMessage.setStringProperty("destination", myResource.getDestination());
+
+        // send the message to the topic destination
+        messageProducer.send(textMessage);
+        System.out.println(clientId + ": sent message with text={" + text + "}");
+    }
 }

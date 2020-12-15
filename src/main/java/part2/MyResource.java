@@ -13,7 +13,6 @@ public class MyResource implements Serializable {
         this.resourceType = resourceType;
         this.resourceValue = resourceValue;
         this.destination = destination;
-
     }
 
     public String getResourceType() {

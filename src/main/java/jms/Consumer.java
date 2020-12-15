@@ -14,7 +14,7 @@ public class Consumer implements ExceptionListener {
     private String clientId;
     private Connection connection;
     private Session session;
-    private MessageConsumer messageConsumer;
+    public MessageConsumer messageConsumer;
 
     public void create(String clientId, String queueName) throws JMSException {
         this.clientId = clientId;

@@ -17,9 +17,9 @@ public class ResourceGenerator implements Runnable {
     @Override
     public void run() {
         int i = 0;
-        while (i < 6) {
+        while (i < 15) {
             try {
-                Thread.sleep(1000);
+                Thread.sleep(200);
 
                 //trimitem resurse pentru ambii playeri
                 publisher.sendMessage(new MyResource(clientId, generateRandomResource(), "player1"));

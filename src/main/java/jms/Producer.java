@@ -9,13 +9,8 @@ public  class Producer {
     private Connection connection;
     private Session session;
     private MessageProducer messageProducer;
-    private int sentMessages = 0;
 
     private static String url = ActiveMQConnection.DEFAULT_BROKER_URL;
-
-    public int getSentMessages() {
-        return sentMessages;
-    }
 
     public void create(String clientId, String queueName) throws JMSException {
         this.clientId = clientId;
@@ -37,17 +32,11 @@ public  class Producer {
         messageProducer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
     }
 
-    public void sendMessage(int arr, int val) throws JMSException {
-        String message = arr + " " + val;
-        sendMessage(message);
-    }
-
     public void sendMessage(String message) throws JMSException {
         TextMessage textMessage = session.createTextMessage(message);
-        // send the message to the topic destination
+        // send the message to the queue destination
         messageProducer.send(textMessage);
-        this.sentMessages++;
-        System.out.println(clientId + ": sent message with text={" + message + "}");
+        System.out.println(clientId + ": sent message with text: " + message);
 
     }
 
