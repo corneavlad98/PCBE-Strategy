@@ -1,35 +1,67 @@
 package part2;
 
-import jms.Subscriber;
+import static part2.AppConstants.*;
 
 public class Player {
     private int woodResource;
     private int stoneResource;
     private int goldResource;
+    private int houses = 0;
 
-    Subscriber subscriber = new Subscriber();
 
-    public Player()
-    {
+    public Player() {
         woodResource = 0;
         stoneResource= 0;
         goldResource = 0;
     }
-    public void setResources(int woodResource, int stoneResource, int goldResource) {
-        this.woodResource = woodResource;
-        this.stoneResource = stoneResource;
-        this.goldResource = goldResource;
+
+    public void addWood(int value){
+        this.woodResource += value;
     }
 
-    public int getWoodResource() {
-        return woodResource;
+    public void addStone(int value){
+        this.stoneResource += value;
     }
 
-    public int getStoneResource() {
-        return stoneResource;
+    public void addGold(int value){
+        this.goldResource += value;
     }
 
-    public int getGoldResource() {
-        return goldResource;
+
+    public boolean hasEnoughResourcesForHouse() {
+        return this.woodResource >= WOOD_FOR_HOUSE && this.stoneResource >= STONE_FOR_HOUSE && this.goldResource >= GOLD_FOR_HOUSE;
+    }
+
+    public void buildHouse() {
+        woodResource -= WOOD_FOR_HOUSE;
+        stoneResource -= STONE_FOR_HOUSE;
+        goldResource -= GOLD_FOR_HOUSE;
+        houses++;
+    }
+
+    public boolean hasEnoughHouses() {
+        return this.houses == 3;
+    }
+
+    public void addResource(MyResource resource) {
+        if(resource.getResourceType().equals("woodResource")) {
+            this.addWood(resource.getResourceValue());
+        }
+        if(resource.getResourceType().equals("stoneResource")) {
+            this.addStone(resource.getResourceValue());
+        }
+        if(resource.getResourceType().equals("goldResource")) {
+            this.addGold(resource.getResourceValue());
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "[" +
+                "woodResource = " + woodResource +
+                ", stoneResource = " + stoneResource +
+                ", goldResource = " + goldResource +
+                ", houses = " + houses +
+                ']';
     }
 }

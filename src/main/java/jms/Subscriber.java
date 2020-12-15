@@ -27,8 +27,8 @@ public class Subscriber {
         this.clientId = clientId;
 
         // create a Connection Factory
-        ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(ActiveMQConnection.DEFAULT_BROKER_URL);
-        ((ActiveMQConnectionFactory) connectionFactory).setTrustAllPackages(true);
+        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(ActiveMQConnection.DEFAULT_BROKER_URL);
+        connectionFactory.setTrustAllPackages(true);
 
         // create a Connection
         connection = connectionFactory.createConnection();

@@ -1,58 +1,83 @@
 package part2;
 
+import jms.Consumer;
+import jms.Producer;
+
 import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.ObjectMessage;
+import javax.jms.TextMessage;
+
+import static part2.AppConstants.*;
 
 public class Main {
-    private static Player player1 = new Player();
-    private static Player player2 = new Player();
 
-    public static void main(String[] args) throws JMSException, InterruptedException {
-        //-----RESOURCE GENERATION------//
+    private static ResourceGenerator resourceGenerator;
+    private static PlayerHandler game;
 
-        player1.subscriber.create("player1", MyConstants2.RESOURCE_TOPIC, "destination = 'player1'");
-        player2.subscriber.create("player2", MyConstants2.RESOURCE_TOPIC, "destination = 'player2'");
+    private static Consumer resourceConsumer;
+    private static Consumer playerConsumer;
+    private static Producer toResourceProducer;
 
-        ResourceListener resourceListenerPlayer1 = new ResourceListener();
-        ResourceListener resourceListenerPlayer2 = new ResourceListener();
+    public static void main(String[] args)  {
+        try {
+            instantiate();
+            runGame();
+            closeAllConnections();
+        } catch (JMSException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println(game);
+    }
 
-        player1.subscriber.messageConsumer.setMessageListener(resourceListenerPlayer1);
-        player2.subscriber.messageConsumer.setMessageListener(resourceListenerPlayer2);
+    private static void instantiate() throws JMSException {
 
-        //every generator sends random resource values to both players in the same Topic
-        ResourceGenerator woodResource = new ResourceGenerator("woodResource", MyConstants2.RESOURCE_TOPIC);
-        ResourceGenerator stoneResource = new ResourceGenerator("stoneResource", MyConstants2.RESOURCE_TOPIC);
-        ResourceGenerator goldResource = new ResourceGenerator("goldResource", MyConstants2.RESOURCE_TOPIC);
+        //instantiate objects
+        game = new PlayerHandler(new Player(), new Player());
+        resourceGenerator = new ResourceGenerator();
+        //create connections
+        //consumers
+        resourceConsumer = new Consumer();
+        playerConsumer = new Consumer();
+        resourceConsumer.create("MainResourceConsumer", RESOURCE_TO_MAIN_QUEUE);
+        playerConsumer.create("MainPlayerConsumer", PLAYER_TO_MAIN_QUEUE);
 
-        Thread thread1 = new Thread(woodResource);
-        Thread thread2 = new Thread(stoneResource);
-        Thread thread3 = new Thread(goldResource);
+        //producers
+        toResourceProducer = new Producer();
+        toResourceProducer.create("ToResourceProducer", MAIN_TO_RESOURCES_QUEUE);
+    }
 
-        //starting all resource threads (start generating resource values)
-        thread1.start();
-        thread2.start();
-        thread3.start();
+    private static void runGame() throws JMSException, InterruptedException {
+        Message resourceMessage, playerMessage;
+        while (true) {
+            Thread.sleep(WAIT_TIME_TO_GENERATE_RESOURCE_MS);
+            toResourceProducer.sendMessage(GENERATE_RESOURCE_MESSAGE);
+            resourceMessage = resourceConsumer.messageConsumer.receive(100);
+            playerMessage = playerConsumer.messageConsumer.receive(100);
+            if(playerMessage != null) {
+                if (playerMessage instanceof TextMessage) {
+                    String text = ((TextMessage) playerMessage).getText();
+                    System.out.println(text);
+                    break;
+                }
+            }
+            if(resourceMessage != null) {
+                if (resourceMessage instanceof ObjectMessage) {
+                    MyResource resource = (MyResource) ((ObjectMessage) resourceMessage).getObject();
+                    game.manageResource(resource);
+                }
+            }
+        }
+    }
 
-        //wait for threads to finish
-        thread1.join();
-        thread2.join();
-        thread3.join();
+    private static void closeAllConnections() throws JMSException {
+        resourceConsumer.close();
+        playerConsumer.close();
+        toResourceProducer.close();
 
-        //close publisher connections
-        woodResource.publisher.closeConnection();
-        stoneResource.publisher.closeConnection();
-        goldResource.publisher.closeConnection();
-
-        //close subscriber connections
-        player1.subscriber.closeConnection();
-        player2.subscriber.closeConnection();
-
-        //set resource values in Player resource fields
-        player1.setResources(resourceListenerPlayer1.getWoodValue(), resourceListenerPlayer1.getStoneValue(), resourceListenerPlayer1.getGoldValue());
-        player2.setResources(resourceListenerPlayer2.getWoodValue(), resourceListenerPlayer2.getStoneValue(), resourceListenerPlayer2.getGoldValue());
-
-        //check if fields where set correctly
-        System.out.println("["+ player1.getWoodResource()+ "," + player1.getStoneResource() + "," + player1.getGoldResource() + "]");
-        System.out.println("["+ player2.getWoodResource()+ "," + player2.getStoneResource() + "," + player2.getGoldResource() + "]");
-
+        game.closeConnections();
+        resourceGenerator.closeConnections();
     }
 }
