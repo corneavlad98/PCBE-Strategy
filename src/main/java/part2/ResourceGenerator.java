@@ -17,7 +17,7 @@ public class ResourceGenerator{
     public ResourceGenerator() throws JMSException {
         producer.create("ResourceGeneratorP", RESOURCE_TO_MAIN_QUEUE);
         consumer.create("ResourceGeneratorC", MAIN_TO_RESOURCES_QUEUE);
-        consumer.messageConsumer.setMessageListener(new ResourceListener(this));
+        consumer.setMessageListener(new ResourceListener(this));
     }
 
     public void generateResourceAndSendMessage(Message message) {

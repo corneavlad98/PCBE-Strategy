@@ -3,6 +3,7 @@ package jms;
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.jms.core.BrowserCallback;
+import part2.ResourceListener;
 
 import javax.jms.*;
 import java.util.Collections;
@@ -13,9 +14,9 @@ public class Consumer implements ExceptionListener {
 
     private String clientId;
     private Connection connection;
-    public Session session;
-    public MessageConsumer messageConsumer;
-    public Queue queue;
+    private Session session;
+    private MessageConsumer messageConsumer;
+    private Queue queue;
 
     public void create(String clientId, String queueName) throws JMSException {
         this.clientId = clientId;
@@ -38,6 +39,14 @@ public class Consumer implements ExceptionListener {
         // Create a MessageProducer from the Session to the Topic or Queue
         messageConsumer = session.createConsumer(queue);
 
+    }
+
+    public Message receive(int latency) throws JMSException {
+        return this.messageConsumer.receive(latency);
+    }
+
+    public void setMessageListener(MessageListener messageListener) throws JMSException {
+        this.messageConsumer.setMessageListener(messageListener);
     }
 
     public String receiveMessage() throws JMSException {

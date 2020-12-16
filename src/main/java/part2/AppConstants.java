@@ -21,6 +21,7 @@ public class AppConstants {
     public static final String GENERATE_RESOURCE_MESSAGE = "Generate Resource";
 
     public static final int WAIT_TIME_TO_GENERATE_RESOURCE_MS = 1000;
+    public static final int MESSAGE_LATENCY = 100;
 
 
 }

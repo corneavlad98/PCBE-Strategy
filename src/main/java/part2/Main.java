@@ -13,7 +13,7 @@ import static part2.AppConstants.*;
 public class Main {
 
     private static ResourceGenerator resourceGenerator;
-    private static PlayerHandler game;
+    private static PlayerHandler playerHandler;
 
     private static Consumer resourceConsumer;
     private static Consumer playerConsumer;
@@ -29,14 +29,15 @@ public class Main {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println(game);
+        System.out.println(playerHandler);
     }
 
     private static void instantiate() throws JMSException {
 
         //instantiate objects
-        game = new PlayerHandler(new Player(), new Player());
+        playerHandler = new PlayerHandler(new Player(), new Player());
         resourceGenerator = new ResourceGenerator();
+
         //create connections
         //consumers
         resourceConsumer = new Consumer();
@@ -54,8 +55,8 @@ public class Main {
         while (true) {
             Thread.sleep(WAIT_TIME_TO_GENERATE_RESOURCE_MS);
             toResourceProducer.sendMessage(GENERATE_RESOURCE_MESSAGE);
-            resourceMessage = resourceConsumer.messageConsumer.receive(100);
-            playerMessage = playerConsumer.messageConsumer.receive(100);
+            resourceMessage = resourceConsumer.receive(MESSAGE_LATENCY);
+            playerMessage = playerConsumer.receive(MESSAGE_LATENCY);
             if(playerMessage != null) {
                 if (playerMessage instanceof TextMessage) {
                     String text = ((TextMessage) playerMessage).getText();
@@ -66,7 +67,7 @@ public class Main {
             if(resourceMessage != null) {
                 if (resourceMessage instanceof ObjectMessage) {
                     MyResource resource = (MyResource) ((ObjectMessage) resourceMessage).getObject();
-                    game.manageResource(resource);
+                    playerHandler.manageResource(resource);
                 }
             }
         }
@@ -77,7 +78,7 @@ public class Main {
         playerConsumer.close();
         toResourceProducer.close();
 
-        game.closeConnections();
+        playerHandler.closeConnections();
         resourceGenerator.closeConnections();
     }
 }
