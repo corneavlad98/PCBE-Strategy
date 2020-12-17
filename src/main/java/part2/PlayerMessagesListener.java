@@ -20,25 +20,27 @@ public class PlayerMessagesListener implements MessageListener {
                 if(textMessage.equals("Player 1 Resources for house ready"))
                 {
                     player1Messages++;
-                    notifyPlayerPublisher.sendMessage("Ok, player 1 build house!");
+                    notifyPlayerPublisher.sendMessage("Ok, player 1 build house!", "player1Notify");
                 }
                 else if(textMessage.equals("Player 2 Resources for house ready"))
                 {
                     player2Messages++;
-                    notifyPlayerPublisher.sendMessage("Ok, player 2 build house!");
+                    notifyPlayerPublisher.sendMessage("Ok, player 2 build house!", "player2Notify");
                 }
-                else if(textMessage.contains("won!") && !MyConstants2.aPlayerWon)
+                else if(textMessage.equals("Player 1 won!"))
                 {
-                    //seteaza flagul de castigare
                     System.out.println(textMessage);
+                    player1Messages++;
                     MyConstants2.aPlayerWon = true;
-
-                    if(textMessage.contains("Player 1"))
-                        MyConstants2.PlayerOneWon = true;
-                    if(textMessage.contains("Player 2"))
-                        MyConstants2.PlayerTwoWon = true;
+                    MyConstants2.PlayerOneWon = true;
                 }
-
+                else if(textMessage.equals("Player 2 won!"))
+                {
+                    System.out.println(textMessage);
+                    player2Messages++;
+                    MyConstants2.aPlayerWon = true;
+                    MyConstants2.PlayerTwoWon = true;
+                }
             } catch (JMSException e) {
                 e.printStackTrace();
             }

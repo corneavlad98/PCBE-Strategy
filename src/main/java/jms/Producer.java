@@ -36,7 +36,7 @@ public  class Producer {
         TextMessage textMessage = session.createTextMessage(message);
         // send the message to the queue destination
         messageProducer.send(textMessage);
-        System.out.println(clientId + ": sent message with text: " + message);
+        System.out.println(clientId + ": sent message with text: '" + message + "'");
 
     }
 

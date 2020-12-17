@@ -18,8 +18,8 @@ public class Main {
         player2.resourceTopicSubscriber.create("player2", MyConstants2.RESOURCE_TOPIC, "destination = 'player2'");
 
         //create player notify topic subscribers
-        player1.playerNotifyTopicSubscriber.create("player1Notify", MyConstants2.PLAYER_NOTIFY_TOPIC);
-        player2.playerNotifyTopicSubscriber.create("player2Notify", MyConstants2.PLAYER_NOTIFY_TOPIC);
+        player1.playerNotifyTopicSubscriber.create("player1Notify", MyConstants2.PLAYER_NOTIFY_TOPIC, "destination = 'player1Notify'");
+        player2.playerNotifyTopicSubscriber.create("player2Notify", MyConstants2.PLAYER_NOTIFY_TOPIC, "destination = 'player2Notify'");
 
         //create "to main queue" producers
         player1.toMainQueueProducer.create("player1Producer", MyConstants2.PLAYER_TO_MAIN_QUEUE);
@@ -39,24 +39,24 @@ public class Main {
         //-----RESOURCE GENERATION------//
         //every generator sends random resource values to both players in the same Topic
         ResourceGenerator woodResource = new ResourceGenerator("woodResource", MyConstants2.RESOURCE_TOPIC);
-       // ResourceGenerator stoneResource = new ResourceGenerator("stoneResource", MyConstants2.RESOURCE_TOPIC);
-        //ResourceGenerator goldResource = new ResourceGenerator("goldResource", MyConstants2.RESOURCE_TOPIC);
+        ResourceGenerator stoneResource = new ResourceGenerator("stoneResource", MyConstants2.RESOURCE_TOPIC);
+        ResourceGenerator goldResource = new ResourceGenerator("goldResource", MyConstants2.RESOURCE_TOPIC);
 
         Thread thread1 = new Thread(woodResource);
-        //Thread thread2 = new Thread(stoneResource);
-        // Thread thread3 = new Thread(goldResource);
+        Thread thread2 = new Thread(stoneResource);
+        Thread thread3 = new Thread(goldResource);
 
         //starting all resource threads (start generating resource values)
         thread1.start();
-        //thread2.start();
-        //thread3.start();
+        thread2.start();
+        thread3.start();
 
         //wait for threads to finish (all resources where put in Topic)
         thread1.join();
-        //thread2.join();
-        //thread3.join();
+        thread2.join();
+        thread3.join();
 
-        System.out.println("Wood resources generated!");
+        System.out.println("All resources generated!");
 
         //-----RESOURCE CONSUMING WITH COMMUNICATION------//
         Thread tp1 = new Thread(player1, MyConstants2.THREAD_ONE_NAME);
@@ -72,8 +72,8 @@ public class Main {
 
         //!close publisher connections!
         woodResource.publisher.closeConnection();
-       // stoneResource.publisher.closeConnection();
-        //goldResource.publisher.closeConnection();
+        stoneResource.publisher.closeConnection();
+        goldResource.publisher.closeConnection();
         playerMessagesListener.notifyPlayerPublisher.closeConnection();
 
         //!close subscriber connections!
@@ -89,6 +89,7 @@ public class Main {
         //!close consumer connections!
         mainConsumer.close();
 
+        //show how many messages Main has consumed from each player
         System.out.println("main consumed from player1: " + playerMessagesListener.getPlayer1Messages() + " messages!");
         System.out.println("main consumed from player2: " + playerMessagesListener.getPlayer2Messages() + " messages!");
 

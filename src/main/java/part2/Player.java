@@ -58,15 +58,22 @@ public class Player implements Runnable {
         this.goldResource += goldResource;
     }
 
+    public boolean hasEnoughResourcesForHouse() {
+        return this.woodResource >= MyConstants2.WOOD_FOR_HOUSE && this.stoneResource >= MyConstants2.STONE_FOR_HOUSE && this.goldResource >= MyConstants2.GOLD_FOR_HOUSE;
+    }
+
     @Override
     public void run() {
         while(houseCount < 3 && !MyConstants2.aPlayerWon) {
-            if (woodResource < MyConstants2.WOOD_FOR_HOUSE) {
+            //if we dont have enough resources to build a house
+            if (!hasEnoughResourcesForHouse()) {
                 try {
+                    //get resource from topic
                     Message message = resourceTopicSubscriber.messageConsumer.receive();
                     MyResource resourceMessage = (MyResource) ((ObjectMessage) message).getObject();
                     System.out.println(Thread.currentThread().getName() + " got " + resourceMessage.resourceType + " with value: " + resourceMessage.resourceValue);
 
+                    //add the resource value to its corresponding container
                     setResources(resourceMessage);
                     Thread.sleep(1000);
 
@@ -76,26 +83,31 @@ public class Player implements Runnable {
                     e.printStackTrace();
                 }
             }
+            //if we have enough resources to build a house
             else {
                 try {
+                    //notify main that player can build a house
                     toMainQueueProducer.sendMessage(Thread.currentThread().getName() + " Resources for house ready");
 
+                    //wait for a response from main (response = "Ok build house!")
                     Message message = playerNotifyTopicSubscriber.messageConsumer.receive(4000);
                     if(message != null && !MyConstants2.aPlayerWon)
                     {
                         String textMessage = ((TextMessage) message).getText();
-                        System.out.println(Thread.currentThread().getName() + " got " + textMessage);
+                        System.out.println(Thread.currentThread().getName() + " got '" + textMessage + "'");
                         if(textMessage.contains("build house") && !MyConstants2.aPlayerWon)
                         {
+                            //notify main that player is building a house
                             toMainQueueProducer.sendMessage(Thread.currentThread().getName() + " Building house...");
                             Thread.sleep(3000);
                             if(!MyConstants2.aPlayerWon)
                             {
+                                //notify main that a house was build and subtract resources used
                                 toMainQueueProducer.sendMessage(Thread.currentThread().getName() + " House built");
                                 houseCount++;
                                 woodResource -= MyConstants2.WOOD_FOR_HOUSE;
-                                // stoneResource -= MyConstants2.STONE_FOR_HOUSE;
-                                //goldResource -= MyConstants2.GOLD_FOR_HOUSE;
+                                stoneResource -= MyConstants2.STONE_FOR_HOUSE;
+                                goldResource -= MyConstants2.GOLD_FOR_HOUSE;
                             }
                         }
                     }
@@ -106,9 +118,14 @@ public class Player implements Runnable {
                 }
             }
         }
+        //when while loop is exited, it means that a player has won
         try {
-            //System.out.println(Thread.currentThread().getName() + " won");
-            toMainQueueProducer.sendMessage(Thread.currentThread().getName() + " won!");
+            //if the current thread is player 1 and player 2 hasn't won, send winning message to main
+            if(Thread.currentThread().getName().equals("Player 1") && !MyConstants2.PlayerTwoWon)
+                toMainQueueProducer.sendMessage(Thread.currentThread().getName() + " won!");
+            //if the current thread is player 2 and player 1 hasn't won, send winning message to main
+            if(Thread.currentThread().getName().equals("Player 2") && !MyConstants2.PlayerOneWon)
+                toMainQueueProducer.sendMessage(Thread.currentThread().getName() + " won!");
             resourceTopicSubscriber.closeConnection();
         } catch (JMSException e) {
             e.printStackTrace();
