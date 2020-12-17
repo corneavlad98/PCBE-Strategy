@@ -3,6 +3,7 @@ package jms;
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.jms.core.BrowserCallback;
+import part2.MyResource;
 import part2.ResourceListener;
 
 import javax.jms.*;
@@ -49,15 +50,22 @@ public class Consumer implements ExceptionListener {
         this.messageConsumer.setMessageListener(messageListener);
     }
 
-    public String receiveMessage() throws JMSException {
-        Message message = messageConsumer.receive(1000);
+    public String receivePlayerMessage(int latency) throws JMSException {
+        Message message = messageConsumer.receive(latency);
         if (message instanceof TextMessage) {
-            TextMessage textMessage = (TextMessage) message;
-            String text = textMessage.getText();
+            String text = ((TextMessage) message).getText();
             return text;
-        } else {
-            return message.toString();
         }
+        return "";
+    }
+    public MyResource receiveResourceMessage(int latency) throws JMSException {
+        Message message = messageConsumer.receive(latency);
+        if(message instanceof ObjectMessage) {
+            MyResource resource = (MyResource) ((ObjectMessage) message).getObject();
+            System.out.println("Main got: " + resource.getResourceType() + " with value: " + resource.getResourceValue());
+            return resource;
+        }
+        return null;
     }
 
     public void close() throws JMSException {

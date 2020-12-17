@@ -4,10 +4,6 @@ import jms.Consumer;
 import jms.Producer;
 
 import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.ObjectMessage;
-import javax.jms.TextMessage;
-
 import static part2.AppConstants.*;
 
 public class Main {
@@ -51,24 +47,25 @@ public class Main {
     }
 
     private static void runGame() throws JMSException, InterruptedException {
-        Message resourceMessage, playerMessage;
+        String  playerMessage;
+        MyResource resourceMessage;
         while (true) {
             Thread.sleep(WAIT_TIME_TO_GENERATE_RESOURCE_MS);
+
+            //tell resource generator to make a resource
             toResourceProducer.sendMessage(GENERATE_RESOURCE_MESSAGE);
-            resourceMessage = resourceConsumer.receive(MESSAGE_LATENCY);
-            playerMessage = playerConsumer.receive(MESSAGE_LATENCY);
-            if(playerMessage != null) {
-                if (playerMessage instanceof TextMessage) {
-                    String text = ((TextMessage) playerMessage).getText();
-                    System.out.println(text);
-                    break;
-                }
-            }
+            //receive the resource from the generator
+            resourceMessage = resourceConsumer.receiveResourceMessage(MESSAGE_LATENCY);
+
             if(resourceMessage != null) {
-                if (resourceMessage instanceof ObjectMessage) {
-                    MyResource resource = (MyResource) ((ObjectMessage) resourceMessage).getObject();
-                    playerHandler.manageResource(resource);
-                }
+                    playerHandler.manageResource(resourceMessage);
+            }
+
+            //receive notification message from player handler
+            playerMessage = playerConsumer.receivePlayerMessage(MESSAGE_LATENCY);
+            if(!playerMessage.equals("")) {
+                    System.out.println(playerMessage);
+                    break;
             }
         }
     }

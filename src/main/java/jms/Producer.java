@@ -49,18 +49,14 @@ public  class Producer {
         // send the message to the topic destination
         messageProducer.send(textMessage);
         this.sentMessages++;
-        System.out.println(clientId + ": sent message with text={" + message + "}");
+        System.out.println(clientId + ": sent message with text={'" + message + "'}");
 
     }
 
     public void sendMessage(MyResource myResource) throws JMSException {
         ObjectMessage objectMessage = session.createObjectMessage(myResource);
-
-        System.out.println("Got " + myResource);
-
         messageProducer.send(objectMessage);
-
-        System.out.println("sent object message " + myResource);
+        System.out.println("sent back object message " + myResource);
     }
 
     public String getClientId() {

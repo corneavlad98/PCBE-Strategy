@@ -1,6 +1,5 @@
 package part2;
 
-import jms.Consumer;
 import jms.Producer;
 
 import javax.jms.JMSException;
@@ -21,37 +20,44 @@ public class PlayerHandler {
 
     public void manageResource(MyResource resource) {
         try {
-            System.out.println("Received resource " + resource);
+            System.out.println("Player handler received: " + resource);
+            //assign the resource to one of the 2 players (assigning is random)
             Random random = new Random();
             int selector = random.nextInt(2);
             if(selector == 0) {
                 player1.addResource(resource);
-                System.out.println(1 + " " + player1);
+                System.out.println("Player1 has " + player1);
                 if(player1.hasEnoughResourcesForHouse()) {
                     player1.buildHouse();
                 }
             }
             else {
                 player2.addResource(resource);
-                System.out.println(2 + " " + player2);
+                System.out.println("Player 2 has "+ player2);
                 if(player2.hasEnoughResourcesForHouse()){
                     player2.buildHouse();
                 }
             }
             if(player1.hasEnoughHouses()) {
-                notifyMain(1);
+                notifyMainAPlayerWon(1);
             }
 
             if(player2.hasEnoughHouses()) {
-                notifyMain(2);
+                notifyMainAPlayerWon(2);
             }
         } catch (JMSException e) {
             e.printStackTrace();
         }
     }
 
-    private void notifyMain(int playerIndex) throws JMSException {
+    private void notifyMainAPlayerWon(int playerIndex) throws JMSException {
         producer.sendMessage("Player " + playerIndex + " has won");
+    }
+    private void notifyMainBuildingHouse(int playerIndex) throws JMSException {
+        producer.sendMessage("Player " + playerIndex + " building house...");
+    }
+    private void notifyMainHouseBuilt(int playerIndex) throws JMSException {
+        producer.sendMessage("Player " + playerIndex + " has built a house!");
     }
 
     public void closeConnections() throws JMSException {

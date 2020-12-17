@@ -3,13 +3,8 @@ package part2;
 
 public class AppConstants {
 
-    public static final String PLAYER_TOPIC = "player_topic.t";
-    public static final String PLAYER_QUEUE = "player_queue.q";
-    public static final String RESOURCE_TOPIC = "resource_topic.t";
-
     public static final String[] RESOURCES = {"woodResource", "stoneResource", "goldResource"};
 
-    public static final String RESOURCE_TO_PLAYER_QUEUE = "resource_to_player.q";
     public static final String PLAYER_TO_MAIN_QUEUE = "players_to_main.q";
     public static final String RESOURCE_TO_MAIN_QUEUE = "resource_to_main.q";
     public static final String MAIN_TO_RESOURCES_QUEUE = "main_to_resource.q";
