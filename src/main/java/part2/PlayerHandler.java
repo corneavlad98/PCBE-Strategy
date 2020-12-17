@@ -28,14 +28,14 @@ public class PlayerHandler {
                 player1.addResource(resource);
                 System.out.println("Player1 has " + player1);
                 if(player1.hasEnoughResourcesForHouse()) {
-                    player1.buildHouse();
+                    notifyMainHouseReadyToBuild(1);
                 }
             }
             else {
                 player2.addResource(resource);
                 System.out.println("Player 2 has "+ player2);
                 if(player2.hasEnoughResourcesForHouse()){
-                    player2.buildHouse();
+                    notifyMainHouseReadyToBuild(2);
                 }
             }
             if(player1.hasEnoughHouses()) {
@@ -50,11 +50,22 @@ public class PlayerHandler {
         }
     }
 
+    public void letPlayerBuildHouse(int playerIndex) throws JMSException {
+        if(playerIndex == 1) {
+            player1.buildHouse();
+        }
+        else {
+            player2.buildHouse();
+        }
+
+        notifyMainHouseBuilt(playerIndex);
+    }
+
     private void notifyMainAPlayerWon(int playerIndex) throws JMSException {
         producer.sendMessage("Player " + playerIndex + " has won");
     }
-    private void notifyMainBuildingHouse(int playerIndex) throws JMSException {
-        producer.sendMessage("Player " + playerIndex + " building house...");
+    private void notifyMainHouseReadyToBuild(int playerIndex) throws JMSException {
+        producer.sendMessage("Player " + playerIndex + " is ready to build a house");
     }
     private void notifyMainHouseBuilt(int playerIndex) throws JMSException {
         producer.sendMessage("Player " + playerIndex + " has built a house!");

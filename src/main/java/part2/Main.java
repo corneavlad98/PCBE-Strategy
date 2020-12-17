@@ -58,14 +58,22 @@ public class Main {
             resourceMessage = resourceConsumer.receiveResourceMessage(MESSAGE_LATENCY);
 
             if(resourceMessage != null) {
-                    playerHandler.manageResource(resourceMessage);
+                playerHandler.manageResource(resourceMessage);
             }
 
             //receive notification message from player handler
             playerMessage = playerConsumer.receivePlayerMessage(MESSAGE_LATENCY);
-            if(!playerMessage.equals("")) {
-                    System.out.println(playerMessage);
-                    break;
+            if(playerMessage.contains("has won")) {
+                System.out.println(playerMessage);
+                break;
+            }
+            else if(playerMessage.contains("is ready to build a house")) {
+                if(playerMessage.contains("1")) {
+                    playerHandler.letPlayerBuildHouse(1);
+                }
+                if(playerMessage.contains("2")) {
+                    playerHandler.letPlayerBuildHouse(2);
+                }
             }
         }
     }
